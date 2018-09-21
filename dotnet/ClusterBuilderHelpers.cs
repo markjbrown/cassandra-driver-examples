@@ -31,17 +31,19 @@ namespace CassandraQuickstart
         private static int MaxRetryOnRateLimiting = 10;
 
         /// <summary>
-        /// 
+        /// Maximum number of connections that can be established to a single host.  
+        /// Set this to a high number to allow load-balancing collections to multiple CosmosDB nodes.
         /// </summary>
         private static int MaxConnectionsPerHost = 300;
 
         /// <summary>
-        /// 
+        /// Minimum number of connections that need to be established to a single host. 
         /// </summary>
         private static int CoreConnectionsPerHost = 1;
 
         /// <summary>
-        /// 
+        /// Maximum number of requests that can be in flight for a single connection.
+        /// For highly throughput scenario's, increase <see cref="MaxConnectionsPerHost"/> and <see cref="MaxRequestsPerConnection"/> together.
         /// </summary>
         private static int MaxRequestsPerConnection = 1024;
 
@@ -62,8 +64,14 @@ namespace CassandraQuickstart
             poolingOptions.SetMaxRequestsPerConnection(ClusterBuilderHelpers.MaxRequestsPerConnection);
             poolingOptions.SetMaxConnectionsPerHost(HostDistance.Local, ClusterBuilderHelpers.MaxConnectionsPerHost);
 
+            // Increase the page size to Max to avoid multiple pagination calls.
             QueryOptions defaultOptions = new QueryOptions();
             defaultOptions.SetPageSize(ClusterBuilderHelpers.DefaultPageSize);
+
+            // Set a custom host name resolver to ensure that SSL does not fail with RemoteCertificateNameMismatch
+            // Ensure that we return the same hostname is passed so that it can be matched with the CNAME from the certificate.
+            SSLOptions sslOptions = new SSLOptions(SslProtocols.Tls12, checkCertificateRevocation: true, remoteCertValidationCallback: ValidateServerCertificate);
+            sslOptions.SetHostNameResolver((ipAddress) => hostName);
 
             return Cluster
                 .Builder()
@@ -72,7 +80,7 @@ namespace CassandraQuickstart
                 .WithQueryOptions(defaultOptions)
                 .WithRetryPolicy(new LoggingRetryPolicy(new CosmosDBMultipleRetryPolicy(ClusterBuilderHelpers.MaxRetryOnRateLimiting)))
                 .AddContactPoint(hostName)
-                .WithSSL(new SSLOptions(SslProtocols.Tls12, checkCertificateRevocation: true, remoteCertValidationCallback: ValidateServerCertificate))
+                .WithSSL(sslOptions)
                 .Build();
         }
 

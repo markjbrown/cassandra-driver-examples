@@ -102,7 +102,7 @@ namespace CassandraQuickstart.Scenarios
             // Drop the table
             Console.WriteLine();
             Console.WriteLine($"Droping table: tracks ");
-            rowSet = await this.Session.ExecuteAsync(new SimpleStatement("DROP TABLE IF EXISTS music.tracks"));
+            //rowSet = await this.Session.ExecuteAsync(new SimpleStatement("DROP TABLE IF EXISTS music.tracks"));
             Console.WriteLine(
                 "Dropped table: tracks. Consumed RU: {0:F2}",
                 CustomPayloadHelpers.ExtractRequestChargeFromCustomPayload(rowSet));

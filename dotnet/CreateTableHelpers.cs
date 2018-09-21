@@ -19,19 +19,16 @@ namespace CassandraQuickstart
         public static Task<RowSet> CreateTableWithThroughputInCQLAsync(
             ISession session, 
             string cqlString, 
-            int throughputToProvision)
+            int throughputToProvision,
+            int? defaultTTL = null)
         {
-            SimpleStatement createTableStatement = new SimpleStatement(
-                cqlString + $" WITH {CosmosDBConstants.CustomOptions.CosmosDBProvisionedThroughput}={throughputToProvision}");
-            return session.ExecuteAsync(createTableStatement);
-        }
+            cqlString += $" WITH {CosmosDBConstants.CustomOptions.CosmosDBProvisionedThroughput}={throughputToProvision}";
+            if (defaultTTL.HasValue)
+            {
+                cqlString += $" AND default_time_to_live={defaultTTL.Value}";
+            }
 
-        public static Task<RowSet> CreateKeyspaceWithThroughputInCustomPayloadAsync(ISession session, string cqlString, int throughputToProvision)
-        {
             SimpleStatement createTableStatement = new SimpleStatement(cqlString);
-            Dictionary<string, byte[]> customPayload = CustomPayloadHelpers.CreateCustomPayload(throughputToProvision);
-            createTableStatement.SetOutgoingPayload(customPayload);
-
             return session.ExecuteAsync(createTableStatement);
         }
     }

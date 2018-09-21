@@ -36,9 +36,9 @@ namespace CassandraQuickstart
             //string hostname = CassandraQuickstart.GetEnvironmentVariable("hostname", "<FILL_IN_FROM_AZURE_PORTAL>");
             //string userName = CassandraQuickstart.GetEnvironmentVariable("userName", "<FILL_IN_FROM_AZURE_PORTAL>");
             //string password = CassandraQuickstart.GetEnvironmentVariable("password", "<FILL_IN_FROM_AZURE_PORTAL>");
-            string hostname = Program.GetEnvironmentVariable("hostname", "cass-stage-signoff-newstack.cassandra.cosmosdb.windows-ppe.net");
-            string userName = Program.GetEnvironmentVariable("user", "cass-stage-signoff-newstack");
-            string password = Program.GetEnvironmentVariable("password", "QxfPRqlwRDZ2POgTkl8dR6C1n66b8twIPqCPCqiVAfR9jpZCSL8D0Y1n2FtCYBO4DEsMXyJ8DPOnGIWp7of2og==");
+            string hostname = Program.GetEnvironmentVariable("hostname", "sivethetest-cassandra.cassandra.cosmosdb.azure.com");
+            string userName = Program.GetEnvironmentVariable("user", "sivethetest-cassandra");
+            string password = Program.GetEnvironmentVariable("password", "Nap6LRrHFAPydUqv6TWDXUXaaHXaw7fb68lsc6TNDq9xC0QlYQsDhiIiA6q0PzvXZ9JJ89FhlrVXqwTA0mcckQ==");
 
             Console.WriteLine($"Executing scenario: {scenarioToRun}\n");
             ScenarioBase scenario = Program.ConstructScenario(scenarioToRun);
@@ -54,6 +54,8 @@ namespace CassandraQuickstart
                     return new BasicCRUDScenario();
                 case "BasicCRUDPreparedScenario":
                     return new BasicCRUDPreparedScenario();
+                case "TimeToLiveScenario":
+                    return new TimeToLiveScenario();
             }
 
             throw new ArgumentException($"Invalid scenario: {scenarioName}");
