@@ -75,7 +75,7 @@ namespace CassandraQuickstart.Scenarios
 
             // Delay the execution to wait for TTL expiry
             Console.WriteLine($"Delaying execution for {TimeToLiveScenario.DefaultTableTTL} seconds");
-            await Task.Delay(TimeSpan.FromSeconds(TimeToLiveScenario.DefaultTableTTL));
+            await Task.Delay(TimeSpan.FromSeconds(TimeToLiveScenario.DefaultTableTTL + 3));
 
             // Read a single track.  Record should exist as custom ttl is greater than default ttl
             Console.WriteLine();
