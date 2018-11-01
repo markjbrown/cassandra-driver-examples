@@ -7,6 +7,7 @@ namespace CassandraQuickstart.Scenarios
     using System.Linq;
     using System.Threading.Tasks;
     using Cassandra;
+    using Cassandra.Data.Linq;
 
     internal sealed class BasicCRUDScenario : ScenarioBase
     {
@@ -36,7 +37,7 @@ namespace CassandraQuickstart.Scenarios
             // Insert some tracks, one record at a time
             double totalRUConsumed = 0;
             Console.WriteLine();
-            Console.WriteLine($"Inserting records into the tracks table");
+            Console.WriteLine($"Inserting records into the tracks table - Using INSERT");
             rowSet = await this.Session.ExecuteAsync(new SimpleStatement(
                 "INSERT INTO music.tracks (id, title, durationms, album, artist, genre) VALUES ('2wYHz0GOHV49Xezd5mWTDP', 'Falling', 201385,'Falling','Lina Mayer', 'Pop')"));
             totalRUConsumed += CustomPayloadHelpers.ExtractRequestChargeFromCustomPayload(rowSet);
@@ -53,6 +54,21 @@ namespace CassandraQuickstart.Scenarios
                 "INSERT INTO music.tracks (id, title, durationms, album, artist, genre) VALUES ('6T8cJz5lAqGer9GUHGyelE', 'Gods Plan', 198960,'Scary Hours','Drake', 'Pop')"));
             totalRUConsumed += CustomPayloadHelpers.ExtractRequestChargeFromCustomPayload(rowSet);
             Console.WriteLine("Inserted 5 records. Consumed RU: {0:F2}", totalRUConsumed);
+
+            // Insert some tracks using BATCH
+            Console.WriteLine();
+            Console.WriteLine($"Inserting records into the tracks table - Using BATCH");
+            BatchStatement batchStatement = new BatchStatement()
+                .SetBatchType(BatchType.Unlogged)
+                .Add(new SimpleStatement(
+                    "INSERT INTO music.tracks (id, title, durationms, album, artist, genre) VALUES ('6mrKP2jyIQmM0rw6fQryjr', 'Let You Down', 212120,'Perception','NF', 'Pop')"))
+                .Add(new SimpleStatement(
+                    "INSERT INTO music.tracks (id, title, durationms, album, artist, genre) VALUES ('08bNPGLD8AhKpnnERrAc6G', 'FRIENDS', 202621,'FRIENDS','Marshmello', 'Pop')"))
+                .Add(new SimpleStatement(
+                    "INSERT INTO music.tracks (id, title, durationms, album, artist, genre) VALUES ('7fCNUWi6uflDTQ08srxMZk', 'No Excuses', 152862,'No Excuses','Meghan Trainor', 'Pop')"));
+            rowSet = await this.Session.ExecuteAsync(batchStatement);
+            totalRUConsumed += CustomPayloadHelpers.ExtractRequestChargeFromCustomPayload(rowSet);
+            Console.WriteLine("Inserted 3 records. Consumed RU: {0:F2}", totalRUConsumed);
 
             // Read a single track
             string trackId = "6T8cJz5lAqGer9GUHGyelE";
@@ -102,7 +118,7 @@ namespace CassandraQuickstart.Scenarios
             // Drop the table
             Console.WriteLine();
             Console.WriteLine($"Droping table: tracks ");
-            //rowSet = await this.Session.ExecuteAsync(new SimpleStatement("DROP TABLE IF EXISTS music.tracks"));
+            rowSet = await this.Session.ExecuteAsync(new SimpleStatement("DROP TABLE IF EXISTS music.tracks"));
             Console.WriteLine(
                 "Dropped table: tracks. Consumed RU: {0:F2}",
                 CustomPayloadHelpers.ExtractRequestChargeFromCustomPayload(rowSet));

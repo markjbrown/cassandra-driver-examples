@@ -39,7 +39,6 @@ namespace CassandraQuickstart
             string hostname = Program.GetEnvironmentVariable("hostname", "sivethetest-cassandra.cassandra.cosmosdb.azure.com");
             string userName = Program.GetEnvironmentVariable("user", "sivethetest-cassandra");
             string password = Program.GetEnvironmentVariable("password", "Nap6LRrHFAPydUqv6TWDXUXaaHXaw7fb68lsc6TNDq9xC0QlYQsDhiIiA6q0PzvXZ9JJ89FhlrVXqwTA0mcckQ==");
-            scenarioToRun = "JsonSupportScenario";
 
             Console.WriteLine($"Executing scenario: {scenarioToRun}\n");
             ScenarioBase scenario = Program.ConstructScenario(scenarioToRun);
